@@ -1,27 +1,7 @@
 # Code for Rshiny app
+
+
 # link for the app: 
-
-# Libraries used
-
-require(tidyverse)
-require(leaflet)
-require(DT)
-require(shiny)
-# Data 
-
-sp_combo_data<-read.csv("C:/Research_data/Research data/Large Branchiopoda/All Large Branchiopod data/Shinyapp/species_map_data.csv")        
-
-species_map_data<-subset(sp_combo_data,select=c(species_name,
-                                                locality,
-                                                latitude,
-                                                longitude,
-                                                family,
-                                                authors))%>%
-    drop_na(.)        %>%
-    tidyr::separate(species_name,c("Genus","Species"),
-                    sep='_',remove=FALSE)
-
-#write.csv(species_map_data,'species_map_data.csv')
 
 library(shiny)
 require(tidyverse)
@@ -29,17 +9,30 @@ require(leaflet)
 
 species_map_data<-read.csv("data/species_map_data.csv")   
 
-ui<-shinyUI(pageWithSidebar(
+
+ui<-shinyUI(fluidPage(
     headerPanel('Distribution of large branchiopods on the Indian subcontinent'),
+    
+    br(),
+    br(),
+    
     sidebarPanel(
-        selectInput('species', 
-                    'Select species', 
-                    as.character(unique(species_map_data$species_name))),
-        wellPanel(span(h5(strong("Family:")), h5(textOutput("family_name"))),
-                  span(h5(strong("Genus:")),h5(textOutput("genus"))),
-                  span(h5(strong("Species:")),h5(textOutput("species"))),
-                  span(h5(strong("Author/s:")),h5(textOutput("authors"))))
+        selectInput(selected = NULL,
+                    'species', 
+                    h4(strong("Select species")), 
+                    as.character(unique(sort(species_map_data$species_name)))),
+        br(),
+        br(),
+        wellPanel(span(h4(strong("Family:")), h5(textOutput("family_name"))),
+                  br(),
+                  span(h4(strong("Genus:")),h5(em(textOutput("genus")))),
+                  br(),
+                  span(h4(strong("Species:")),h5(em(textOutput("species")))),
+                  br(),
+                  span(h4(strong("Author/s:")),h5(textOutput("authors")))),
+        
     ),
+    
     mainPanel(
         leafletOutput("plot1",
                       width = '100%',
@@ -48,6 +41,7 @@ ui<-shinyUI(pageWithSidebar(
     )
 ))
 
+## server
 
 server<-shinyServer(
     function(input,output){
@@ -74,16 +68,23 @@ server<-shinyServer(
                                                     "font-size" = "13px")),
                     
                     radius = 5)%>%
+                setView(lng = mean(data()$longitude), lat = mean(data()$latitude), zoom = 05) %>%
                 addScaleBar(.,
                             position = 'topright')
             
         })
         
         output$family_name <- renderText({ unique(as.character(data()$family))})
+        
         output$genus <- renderText({ unique(as.character(data()$genus))})
+        
         output$species <- renderText({ unique(as.character(data()$species))})
+        
         output$authors<-renderText({ unique(as.character(data()$authors))})
+        
     }
 )
 
 shinyApp(ui = ui, server = server)
+
+
