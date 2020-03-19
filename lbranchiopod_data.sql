@@ -136,7 +136,6 @@ family varchar (200)
 copy family_data(genus,family)
 from 'C:\Research_data\Research data\Large Branchiopoda\All Large Branchiopod data\branchi_families.csv' DELIMITER ',' CSV HEADER;*/
 
-
 -- Combining all the datasets (except family) to generate a Indian large branchiopod crustacean data
 
 drop table if exists combined_species_data;
@@ -228,6 +227,21 @@ where species_name = 'Eulimnadia_michaeli' and locality = 'Belhe'
 delete from combined_species_data 
 where species_name = 'Eulimnadia_sp.';
 
+delete from combined_species_data 
+where species_name = 'Eocyzicus_pellucidus';
+
+delete from combined_species_data 
+where species_name = 'Eocyzicus_plumosus';
+
+delete from combined_species_data 
+where species_name = 'Eocyzicus_sp.';
+
+delete from combined_species_data 
+where species_name = 'Eulimnadia_similis';
+
+delete from combined_species_data 
+where species_name = 'Leptestheria_longispina';
+
 insert into combined_species_data
 values('Eulimnadia_michaeli','Belhe',19.113,74.2177)
 ;
@@ -248,6 +262,10 @@ insert into combined_species_data
 values('Eulimnadia_chaperi','Badami',15.92,75.68028)
 ;
 
+select 
+*
+from 
+combined_species_data csd ;
 -- Splitting the species_name into species and genus column
 
 alter table public.combined_species_data 
@@ -262,21 +280,30 @@ update public.combined_species_data
 set species = split_part(species_name,'_',2);
 
 select 
-*
+count(distinct species_name)
 from 
 public.combined_species_data ;
-
-
--- Adding the family information to the combined dataset
 
 select 
 *
 from 
-combined_species_data 
+combined_species_data csd ;
+
+-- Adding the family information to the combined dataset
+select 
+csd.species_name,
+csd.locality,
+csd.latitude,
+csd.longitude,
+csd.genus,
+csd.species,
+fd.family
+from 
+combined_species_data  as csd
 join
-family_data 
+family_data  as fd
 on
-combined_species_data.genus=family_data.genus 
+csd.genus=fd.genus
 ;
 
 -- Generating a locality table for all occurrence data
@@ -363,3 +390,4 @@ select
 *
 from 
 sp_loc;
+
