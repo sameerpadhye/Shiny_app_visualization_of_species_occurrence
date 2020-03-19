@@ -6,39 +6,40 @@
 library(shiny)
 require(tidyverse)
 require(leaflet)
+require(shinythemes)
 
 species_map_data<-read.csv("data/species_map_data.csv")   
 
 
-ui<-shinyUI(fluidPage(
-    headerPanel('Distribution of large branchiopods on the Indian subcontinent'),
-    
-    br(),
-    br(),
-    
-    sidebarPanel(
-        selectInput(selected = NULL,
-                    'species', 
-                    h4(strong("Select species")), 
-                    as.character(unique(sort(species_map_data$species_name)))),
-        br(),
-        br(),
-        wellPanel(span(h4(strong("Family:")), h5(textOutput("family_name"))),
-                  br(),
-                  span(h4(strong("Genus:")),h5(em(textOutput("genus")))),
-                  br(),
-                  span(h4(strong("Species:")),h5(em(textOutput("species")))),
-                  br(),
-                  span(h4(strong("Author/s:")),h5(textOutput("authors")))),
-        
-    ),
-    
-    mainPanel(
-        leafletOutput("plot1",
-                      width = '100%',
-                      height = 600)
-        
-    )
+ui<-shinyUI(fluidPage(theme = shinytheme("darkly"),
+                      headerPanel('Distribution of large branchiopods on the Indian subcontinent'),
+                      
+                      br(),
+                      br(),
+                      
+                      sidebarPanel(
+                          selectInput(selected = NULL,
+                                      'species', 
+                                      h3(strong("Select species")), 
+                                      as.character(unique(sort(species_map_data$species_name)))),
+                          br(),
+                          br(),
+                          wellPanel(span(h4(strong("Family:")), h4(textOutput("family_name"))),
+                                    br(),
+                                    span(h4(strong("Genus:")),h4(em(textOutput("genus")))),
+                                    br(),
+                                    span(h4(strong("Species:")),h4(em(textOutput("species")))),
+                                    br(),
+                                    span(h4(strong("Author/s:")),h4(textOutput("authors")))),
+                          
+                      ),
+                      
+                      mainPanel(
+                          leafletOutput("plot1",
+                                        width = '100%',
+                                        height = 600)
+                          
+                      )
 ))
 
 ## server
@@ -86,5 +87,3 @@ server<-shinyServer(
 )
 
 shinyApp(ui = ui, server = server)
-
-
