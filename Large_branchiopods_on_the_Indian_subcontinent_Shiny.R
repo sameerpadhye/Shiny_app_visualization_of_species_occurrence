@@ -49,9 +49,12 @@ server<-shinyServer(
         
         data<- reactive({species_map_data[species_map_data$species_name == input$species,]})
         
+        india_map<-readOGR("C:/Research_data/GIS_data/GIS_layers/India_DataLayers/IND_adm/INDSTATE_region.shp")        
         
         output$plot1 <- renderLeaflet({data()%>%
                 leaflet() %>%
+                addPolygons(data=india_map,color = 'black',weight = 2, smoothFactor = 0.5,
+                            opacity = 0.5, fillOpacity = 0)%>%
                 addProviderTiles("Stamen.Terrain") %>%
                 addCircleMarkers(
                     stroke = TRUE,
