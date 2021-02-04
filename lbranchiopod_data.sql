@@ -270,6 +270,7 @@ combined_species_data csd ;
 
 alter table public.combined_species_data 
 add column genus varchar(50);
+
 update public.combined_species_data 
 set genus = split_part(species_name,'_',1);
 
@@ -392,3 +393,15 @@ from
 sp_loc;
 
 
+select *
+from 
+combined_species_data 
+;
+
+select 
+species_name,
+locality ,
+dense_rank () over (order by species_name)
+from 
+combined_species_data csd 
+;
